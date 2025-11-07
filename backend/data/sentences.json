@@ -1,0 +1,147 @@
+{
+  "pages": [
+    {
+      "page": 1,
+      "image": "images/page1.jpg",
+      "sticker_number": "001",
+      "sentences": {
+        "english": [
+          {
+            "id": "girl_intro_p1",
+            "speaker": "Girl student",
+            "text": "My name is ………… and I study in class ………",
+            "type": "sentence",
+            "audio_granularity": "word",
+            "words": ["my", "name", "is", "and", "i", "study", "in", "class"]
+          },
+          {
+            "id": "boy_intro_p1",
+            "speaker": "Boy student",
+            "text": "My name is ………… and I study in class ………",
+            "type": "sentence",
+            "audio_granularity": "word",
+            "words": ["my", "name", "is", "and", "i", "study", "in", "class"]
+          }
+
+          
+        ],
+        "monpa": [
+          {
+            "id": "girl_intro_p1",
+            "speaker": "Girl student",
+            "text": "Ngog meng Dolma yin, Nye dzinda ngapa ga lebdu.",
+            "type": "sentence",
+            "audio_granularity": "sentence",
+            "words": []
+          },
+          {
+            "id": "boy_intro_p1",
+            "speaker": "Boy student",
+            "text": "Ngog meng Tashi yin, Nye dzinda ngapa ga lebdu.",
+            "type": "sentence",
+            "audio_granularity": "sentence",
+            "words": []
+          }
+          
+          
+        ]
+      }
+    },
+    {
+    "page": 2,
+        "image": "images/page2.jpg",
+        "sticker_number": "002",
+        "sentences": {
+            "english": [
+            {
+                "id": "girl_computer_p2",
+                "speaker": "Girl student",
+                "text": "My name is ………… and I am using a computer.",
+                "type": "sentence",
+                "audio_granularity": "word",
+                "words": ["my", "name", "is", "and", "i", "am", "using", "a", "computer"]
+            },
+            {
+                "id": "arunachal",
+                "speaker": "Girl student",
+                "text": "Look, there is Arunachal Pradesh on the Globe.",
+                "type": "sentence",
+                "audio_granularity": "word",
+                "words": ["look", "there", "is", "arunachal", "pradesh", "on", "the", "globe"]
+            },
+            {
+                "id": "globe",
+                "speaker": "Boy student",
+                "text": "This is a globe.",
+                "type": "sentence",
+                "audio_granularity": "word",
+                "words": ["this", "is", "a", "globe"]
+            },
+            {
+                "id": "play_football",
+                "speaker": "Students playing",
+                "text": "Come let us play football.",
+                "type": "sentence",
+                "audio_granularity": "word",
+                "words": ["come", "let", "us", "play", "football"]
+            },
+            {
+                "id": "boy_celebration_p2",
+                "speaker": "Boy student",
+                "text": "My name is ………… Today we are celebrating the Annual school day.",
+                "type": "sentence",
+                "audio_granularity": "word",
+                "words": ["my", "name", "is", "today", "we", "are", "celebrating", "the", "annual", "school", "day"]
+            }
+            ],
+            "monpa": [
+            {
+                "id": "girl_computer_p2",
+                "speaker": "Girl student",
+                "text": "Ngog meng Dolma yin, Nye computer ga leka yadu.",
+                "type": "sentence",
+                "audio_granularity": "sentence",
+                "words": []
+            },
+            {
+                "id": "arunachal",
+                "speaker": "Girl student",
+                "text": "Te, Gola sabthra lohka Arunachal Pradesh otso nii.",
+                "type": "sentence",
+                "audio_granularity": "sentence",
+                "words": []
+            },
+            {
+                "id": "globe",
+                "speaker": "Students playing",
+                "text": "Utsu Gola sabthra yim",
+                "type": "sentence",
+                "audio_granularity": "sentence",
+                "words": []
+            },
+            {
+                "id": "play_football",
+                "speaker": "Students playing",
+                "text": "Sho ngatang kangtse ball shanchu",
+                "type": "sentence",
+                "audio_granularity": "sentence",
+                "words": []
+            },
+            {
+                "id": "boy_celebration_p2",
+                "speaker": "Boy student",
+                "text": "Ngog meng Tashi yin, ngar dash lokhor lobda nyimo tsisung yadu.",
+                "type": "sentence",
+                "audio_granularity": "sentence",
+                "words": []
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "total_pages": 2,
+    "app_title": "Interactive Language Storybook",
+    "description": "Back to School - A bilingual learning experience"
+  }
+}

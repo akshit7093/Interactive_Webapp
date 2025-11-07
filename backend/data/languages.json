@@ -1,0 +1,17 @@
+{
+  "languages": [
+    {
+      "code": "english",
+      "name": "English",
+      "display_name": "English",
+      "default": true
+    },
+    {
+      "code": "monpa",
+      "name": "Monpa",
+      "display_name": "Monpa",
+      "default": false
+    }
+  ],
+  "default_language": "english"
+}

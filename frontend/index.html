@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive Language Learning Storybook - Back to School">
+    <meta name="keywords" content="language learning, storybook, education, interactive">
+    <meta name="author" content="Interactive Storybook">
+    
+    <title>Interactive Storybook - Back to School</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    
+    <!-- Preconnect to API -->
+    <link rel="preconnect" href="http://localhost:8000">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Google Fonts (Optional) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading Storybook...</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">
+                        <span class="book-icon">📚</span>
+                        Interactive Storybook
+                    </h1>
+                    <p class="app-subtitle">Back to School</p>
+                </div>
+                
+                <div class="header-right">
+                    <!-- Language Selector -->
+                    <div class="language-selector">
+                        <label for="language-select" class="language-label">
+                            <span class="globe-icon">🌐</span>
+                            Language:
+                        </label>
+                        <select id="language-select" class="language-dropdown">
+                            <option value="english">English</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Translation Toggle -->
+                    <div class="translation-toggle-container">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="translation-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">Show English</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Book Container -->
+            <div id="book-container" class="book-container">
+                
+                <!-- Page -->
+                <div class="page active">
+                    
+                    <!-- Left Side: Image -->
+                    <div class="page-left">
+                        <div id="page-image" class="image-container">
+                            <!-- Image will be loaded here -->
+                            <div class="image-placeholder">
+                                <span class="placeholder-icon">🖼️</span>
+                                <p>Loading image...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Sticker Number -->
+                        <div class="sticker-container">
+                            <div id="sticker-number" class="sticker-number">001</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: Text -->
+                    <div class="page-right">
+                        <div id="text-container" class="text-container">
+                            <!-- Text content will be loaded here -->
+                            <div class="text-placeholder">
+                                <p>Loading content...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Audio Instructions -->
+                        <div class="audio-instructions">
+                            <span class="audio-icon">🔊</span>
+                            <p>Click on words or sentences to hear pronunciation</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                
+            </div>
+            
+            <!-- Navigation Controls -->
+            <div class="navigation-controls">
+                
+                <!-- Previous Button -->
+                <button id="prev-page" class="nav-button prev-button" aria-label="Previous Page">
+                    <span class="nav-icon">◀</span>
+                    <span class="nav-text">Previous</span>
+                </button>
+                
+                <!-- Page Indicator -->
+                <div class="page-indicator">
+                    <span id="page-number" class="page-number">Page 1 of 2</span>
+                </div>
+                
+                <!-- Next Button -->
+                <button id="next-page" class="nav-button next-button" aria-label="Next Page">
+                    <span class="nav-text">Next</span>
+                    <span class="nav-icon">▶</span>
+                </button>
+                
+            </div>
+            
+            <!-- Keyboard Shortcuts Help -->
+            <div class="keyboard-shortcuts">
+                <span class="shortcut-icon">⌨️</span>
+                <span class="shortcut-text">
+                    Use arrow keys to navigate • Press ESC to stop audio
+                </span>
+            </div>
+            
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p class="footer-text">
+                    Interactive Language Learning Storybook
+                </p>
+                <p class="footer-credits">
+                    Designed for educational purposes
+                </p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Error Banner Container -->
+    <div id="error-container" class="error-container"></div>
+
+    <!-- Audio Player (Hidden) -->
+    <audio id="audio-player" style="display: none;"></audio>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="utils.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Initialize -->
+    <script>
+        // Hide loading overlay once page is fully loaded
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 300);
+            }, 500);
+        });
+
+        // Apply user preferences on load
+        if (typeof applyUserPreferences === 'function') {
+            applyUserPreferences();
+        }
+
+        // Service Worker registration (for PWA - optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // navigator.serviceWorker.register('/sw.js')
+                //     .then(reg => console.log('Service Worker registered'))
+                //     .catch(err => console.log('Service Worker registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
