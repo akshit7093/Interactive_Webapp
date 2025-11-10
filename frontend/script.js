@@ -13,10 +13,7 @@ let state = {
 // ---- Stop Video Playback and Reset Display ----
 function stopVideo() {
   const currentPageElement = document.querySelector(`.page[data-page="${state.currentPage}"]`);
-  if (!currentPageElement) {
-    console.warn('[DEBUG] No current page element found for video stop');
-    return;
-  }
+  if (!currentPageElement) return;
 
   const video = currentPageElement.querySelector('.storybook-video');
   if (video) {
@@ -24,7 +21,7 @@ function stopVideo() {
     video.pause();
     video.currentTime = 0;
     video.style.display = 'none';
-    video.removeEventListener('ended', stopVideo);
+    video.removeEventListener('ended', handleVideoEnd);
     video.removeEventListener('error', handleVideoError);
   }
 
@@ -32,6 +29,11 @@ function stopVideo() {
   if (img) {
     img.style.display = 'block';
   }
+}
+
+function handleVideoEnd() {
+  console.log('[DEBUG] Video playback ended - returning to image');
+  stopVideo();
 }
 
 function handleVideoError(e) {
@@ -98,10 +100,13 @@ async function fetchPages() {
   state.totalPages = data.metadata.total_pages;
   console.log(`[DEBUG] Loaded ${state.pages.length} pages. Total pages: ${state.totalPages}`);
   
-  // CRITICAL DEBUG: Log ALL page data structures to verify video fields exist
-  console.log('[DEBUG] ALL PAGE DATA STRUCTURES (checking for video fields):');
+  // CRITICAL: Verify video fields exist in page data
+  console.log('[DEBUG] === PAGE DATA STRUCTURE VERIFICATION ===');
   state.pages.forEach(page => {
-    console.log(`Page ${page.page} has video field:`, !!page.video, 'Value:', page.video);
+    console.log(`Page ${page.page}: Has video field? ${!!page.video}, Value: "${page.video}"`);
+    if (!page.video) {
+      console.warn(`[WARN] Page ${page.page} is missing video field! Videos will not play.`);
+    }
   });
 }
 
@@ -181,10 +186,7 @@ function renderPage(animDirection = null) {
     console.warn(`[WARN] No page data found for page ${state.currentPage}`);
     return;
   }
-  
-  // CRITICAL DEBUG: Log full page structure to verify video field
-  console.log(`[DEBUG] FULL PAGE DATA STRUCTURE for page ${state.currentPage}:`, pageData);
-  console.log(`[DEBUG] Does page ${state.currentPage} have video field?`, !!pageData.video, 'Value:', pageData.video);
+  console.log(`[DEBUG] Current page data (page ${state.currentPage}):`, pageData);
 
   const page = document.createElement('div');
   page.className = `page ${animDirection ? `flip-in-${animDirection}` : ''}`;
@@ -205,31 +207,32 @@ function renderPage(animDirection = null) {
   imgCont.appendChild(img);
 
   // Video Element (added if page has video)
-  if (pageData.video && typeof pageData.video === 'string' && pageData.video.trim() !== '') {
-    console.log(`[DEBUG] ✅ Video field DETECTED for page ${state.currentPage}: "${pageData.video}"`);
+  if (pageData.video) {
+    console.log(`[DEBUG] ✅ Video field found for page ${state.currentPage}: "${pageData.video}"`);
+    
     const video = document.createElement('video');
-    video.src = getApiUrl(`/api/videos/${encodeURIComponent(pageData.video.trim())}`);
-    console.log(`[DEBUG] Video src URL set to:`, video.src);
+    // DO NOT set the src here - we'll set it dynamically when needed
+    console.log(`[DEBUG] Video element created (src will be set on click)`);
     
     video.className = 'storybook-video';
-    video.style.display = 'none';
-    video.controls = false; 
-    video.autoplay = false; 
-    video.loop = false; 
-    video.muted = true; // Required for autoplay to work in most browsers
-    video.playsInline = true; // For mobile devices
-    video.preload = 'metadata';
+    video.style.display = 'none';  // Hidden by default, shown when audio plays
+    video.controls = false;
+    video.autoplay = false;
+    video.loop = false;
+    video.muted = true;  // Critical for autoplay to work in modern browsers
+    video.playsInline = true;
+    video.preload = 'none'; // Don't preload videos until needed
     
     // Error handling
     video.onerror = (e) => {
-      console.error(`[ERROR] Video loading failed (${pageData.video}):`, e.target.error);
+      console.error(`[ERROR] Video loading failed for "${pageData.video}":`, e.target.error);
       handleVideoError(e);
     };
     
     imgCont.appendChild(video);
-    console.log(`[DEBUG] Video element created and appended for page ${state.currentPage}`);
+    console.log(`[DEBUG] Video element created and appended to DOM for page ${state.currentPage}`);
   } else {
-    console.warn(`[WARN] ❌ No valid video field found for page ${state.currentPage}. Expected string but got:`, pageData.video);
+    console.warn(`[WARN] ❌ No video field found for page ${state.currentPage}. Check your sentences.json data.`);
   }
 
   left.appendChild(imgCont);
@@ -342,17 +345,20 @@ function animateFlip(dir, cb) {
   const book = document.getElementById('book-container');
   const currentPage = book.querySelector('.page');
 
+  // Hide new page initially
   cb(); 
   const newPage = book.lastElementChild;
   if (newPage) {
     newPage.style.zIndex = '1';
   }
 
+  // Apply flip-out animation to current page
   if (currentPage) {
     currentPage.style.zIndex = '10';
     currentPage.classList.add(dir === 'next' ? 'flip-out-left' : 'flip-out-right');
   }
 
+  // Cleanup after animation
   setTimeout(() => {
     if (currentPage) {
       currentPage.remove();
@@ -363,7 +369,7 @@ function animateFlip(dir, cb) {
     }
     state.animating = false;
     console.log('[DEBUG] Animation completed. animating flag reset to false.');
-  }, CONFIG.app.pageTransitionDuration || 500);
+  }, 500); // Default animation duration
 }
 
 // ---- Navigation Buttons ----
@@ -400,17 +406,17 @@ function playAudio(language, sentenceId, audioId, el) {
     return;
   }
   
-  // CRITICAL DEBUG: Check video field status here too
-  console.log(`[DEBUG] 📄 Current page data for audio playback (page ${state.currentPage}):`, currentPageData);
-  console.log(`[DEBUG] 🎥 Does current page have video field for playback?`, !!currentPageData.video, 'Value:', currentPageData.video);
+  // CRITICAL: Check if this page has a video field
+  console.log(`[DEBUG] 📄 Current page data for playback (page ${state.currentPage}):`, currentPageData);
+  console.log(`[DEBUG] 🎥 Does page ${state.currentPage} have video? ${!!currentPageData.video}, Value: "${currentPageData.video}"`);
 
-  // Audio handling
+  // Audio handling - ALWAYS make the API call
   const audioUrl = getApiUrl(`/api/audio/${language}/${sentenceId}/${audioId}`);
-  console.log(`[DEBUG] 📢 Audio URL: ${audioUrl}`);
+  console.log(`[DEBUG] 📢 Requesting audio from URL: ${audioUrl}`);
   const audioElem = new Audio(audioUrl);
   state.audio = audioElem;
 
-  // Handle audio playback
+  // Handle audio playback errors
   const playPromise = audioElem.play();
   if (playPromise !== undefined) {
     playPromise.catch(err => {
@@ -419,13 +425,13 @@ function playAudio(language, sentenceId, audioId, el) {
     });
   }
 
-  // VIDEO HANDLING - ONLY ATTEMPT IF VIDEO FIELD EXISTS
-  if (currentPageData.video && typeof currentPageData.video === 'string' && currentPageData.video.trim() !== '') {
-    console.log(`[DEBUG] 🎬 VIDEO FIELD PRESENT - Setting up video playback after delay`);
+  // VIDEO HANDLING - ONLY IF VIDEO FIELD EXISTS
+  if (currentPageData.video) {
+    console.log(`[DEBUG] 🎬 VIDEO FIELD DETECTED - Setting up video playback`);
     
-    // Use setTimeout to ensure DOM is fully updated after page transitions
+    // Wait for DOM to be fully ready
     setTimeout(() => {
-      console.log(`[DEBUG] ⏱️ Entering video playback delay callback for page ${state.currentPage}`);
+      console.log(`[DEBUG] ⏱️ Starting video setup for page ${state.currentPage}`);
       
       const currentPageElement = document.querySelector(`.page[data-page="${state.currentPage}"]`);
       if (!currentPageElement) {
@@ -436,22 +442,35 @@ function playAudio(language, sentenceId, audioId, el) {
       const video = currentPageElement.querySelector('.storybook-video');
       const img = currentPageElement.querySelector('.storybook-image');
       
-      console.log(`[DEBUG] DOM elements found for video playback - Video:`, !!video, 'Image:', !!img);
+      console.log(`[DEBUG] DOM elements status - Video: ${!!video}, Image: ${!!img}`);
       
       if (video && img) {
-        console.log(`[DEBUG] ✅ Playing video for page ${state.currentPage}: "${currentPageData.video}"`);
+        // Set the video src dynamically HERE (critical fix)
+        const videoUrl = getApiUrl(`/api/videos/${encodeURIComponent(currentPageData.video)}`);
+        console.log(`[DEBUG] 🎥 Requesting video from URL: ${videoUrl}`);
+        
+        // Only update src if it's different
+        if (video.src !== videoUrl) {
+          video.src = videoUrl;
+          console.log(`[DEBUG] Video src set to: ${videoUrl}`);
+        }
+        
         video.style.display = 'block';
         img.style.display = 'none';
-
-        // Ensure video is ready to play
+        
+        // Setup event listeners
+        video.removeEventListener('ended', handleVideoEnd); // Remove any existing listeners
+        video.removeEventListener('error', handleVideoError);
+        video.addEventListener('ended', handleVideoEnd);
+        video.addEventListener('error', handleVideoError);
+        
+        // Load the video to ensure it's ready to play
         video.load();
         
-        // Play video with error handling
+        // Attempt to play video
         video.play()
           .then(() => {
             console.log('[DEBUG] 🎥 Video playback started successfully');
-            // Set up end handler after successful play
-            video.addEventListener('ended', stopVideo);
           })
           .catch(err => {
             console.error('[ERROR] ❌ Video play rejected:', err);
@@ -462,14 +481,8 @@ function playAudio(language, sentenceId, audioId, el) {
           });
       } else {
         console.warn('[WARN] ❌ Video or image element missing in current page DOM');
-        if (!video) {
-          console.warn('[DEBUG] No .storybook-video element found in page DOM');
-        }
-        if (!img) {
-          console.warn('[DEBUG] No .storybook-image element found in page DOM');
-        }
       }
-    }, 100); // Increased delay to ensure DOM is fully ready
+    }, 50); // Shorter delay since we're setting src dynamically
   } else {
     console.log(`[DEBUG] ⏭️ No video field for page ${state.currentPage} - only playing audio`);
   }
@@ -478,7 +491,7 @@ function playAudio(language, sentenceId, audioId, el) {
   audioElem.onended = () => {
     console.log('[DEBUG] 🔊 Audio playback ended');
     el.classList.remove('playing');
-    stopVideo();
+    // Don't call stopVideo() here - let video end naturally
   };
 
   audioElem.onerror = () => {
@@ -492,4 +505,12 @@ function playAudio(language, sentenceId, audioId, el) {
 function showError(msg) {
   console.error('[ALERT]', msg);
   alert(msg);
+}
+
+// ---- Utility function (if not defined elsewhere) ----
+function getApiUrl(path) {
+  // If you have a config.js with API_BASE_URL, use that
+  // Otherwise default to relative path
+  const baseUrl = window.CONFIG?.api?.baseUrl || '';
+  return baseUrl + path;
 }

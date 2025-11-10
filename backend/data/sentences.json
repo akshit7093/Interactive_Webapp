@@ -1,7 +1,7 @@
 {
   "pages": [
     {
-      "page": 1,
+      "page": 2,
       "image": "girl_p_1.png",          
       "video": "girl_p_1_animation.mp4",
       "sticker_number": "001",
@@ -10,7 +10,7 @@
           {
             "id": "girl_intro_p1",
             "speaker": "Girl student",
-            "text": "My name is ………… and I study in class ………",
+            "text": "My name is Dolma and I study in class 5",
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
@@ -33,7 +33,7 @@
       }
     },
     {
-      "page": 2,
+      "page": 1,
       "image": "boy_p_2.png",
       "video": "boy_p_2_animation.mp4",
       "sticker_number": "002",
@@ -42,7 +42,7 @@
           {
             "id": "boy_intro_p1",
             "speaker": "Boy student",
-            "text": "My name is ………… and I study in class ………",
+            "text": "My name is Tashi and I study in class 5",
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
@@ -72,7 +72,7 @@
           {
             "id": "girl_computer_p2",
             "speaker": "Girl student",
-            "text": "My name is ………… and I am using a computer.",
+            "text": "My name is Dolma and I am using a computer",
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
@@ -93,7 +93,7 @@
       }
     },
     {
-      "page": 4,
+      "page": 7,
       "image": "girl_p_4.png",
       "video": "girl_p_4_animation.mp4",
       "sticker_number": "004",
@@ -123,7 +123,7 @@
       }
     },
     {
-      "page": 5,
+      "page": 6,
       "image": "boy_p_5.png",
       "video": "boy_p_5_animation.mp4",
       "sticker_number": "005",
@@ -153,7 +153,7 @@
       }
     },
     {
-      "page": 6,
+      "page": 5,
       "image": "student_p_6.png",
       "video": "student_p_6_animation.mp4",
       "sticker_number": "006",
@@ -161,7 +161,7 @@
         "english": [
           {
             "id": "play_football",
-            "speaker": "Students playing",
+            "speaker": "Boy students playing",
             "text": "Come let us play football.",
             "type": "sentence",
             "audio_granularity": "sentence",
@@ -183,7 +183,7 @@
       }
     },
     {
-      "page": 7,
+      "page": 4,
       "image": "boy_p_7.png",
       "video": "boy_p_7_animation.mp4",
       "sticker_number": "007",
@@ -192,7 +192,7 @@
           {
             "id": "boy_celebration_p2",
             "speaker": "Boy student",
-            "text": "My name is ………… Today we are celebrating the Annual school day.",
+            "text": "My name is Tashi Today we are celebrating the Annual school day.",
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
