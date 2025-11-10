@@ -106,7 +106,7 @@
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
-            "audio_url": "audio/arunachal_english.mp3"
+            "audio_url": "audio/full_sentence.mp3"
           }
         ],
         "monpa": [
@@ -117,7 +117,7 @@
             "type": "sentence",
             "audio_granularity": "sentence",
             "words": [],
-            "audio_url": "audio/arunachal_monpa.mp3"
+            "audio_url": "audio/full_sentence.mp3"
           }
         ]
       }
@@ -142,7 +142,7 @@
         "monpa": [
           {
             "id": "globe",
-            "speaker": "Students playing",
+            "speaker": "Boy student",
             "text": "Utsu Gola sabthra yim",
             "type": "sentence",
             "audio_granularity": "sentence",
