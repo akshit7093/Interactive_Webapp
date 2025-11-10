@@ -16,16 +16,16 @@
     --secondary-color: #FF9800;
     --secondary-dark: #F57C00;
     
-    --bg-color: #FFF8E7;
-    --page-bg: #FFFFFF;
-    --text-color: #333333;
-    --text-light: #666666;
-    --text-lighter: #999999;
+    --bg-color: #F5F1E8; /* Warmer, paper-like background */
+    --page-bg: #FFFBF2;
+    --text-color: #3D2C1D; /* Darker, softer text */
+    --text-light: #5D4037;
+    --text-lighter: #8D6E63;
     
-    --border-color: #E0E0E0;
-    --shadow-light: rgba(0, 0, 0, 0.1);
-    --shadow-medium: rgba(0, 0, 0, 0.15);
-    --shadow-heavy: rgba(0, 0, 0, 0.25);
+    --border-color: #D7CCC8;
+    --shadow-light: rgba(93, 64, 55, 0.1);
+    --shadow-medium: rgba(93, 64, 55, 0.2);
+    --shadow-heavy: rgba(93, 64, 55, 0.4);
     
     --error-color: #F44336;
     --success-color: #4CAF50;
@@ -35,6 +35,7 @@
     /* Typography */
     --font-primary: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-secondary: 'Poppins', Arial, sans-serif;
+    --font-serif: 'Merriweather', Georgia, serif;
     
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -53,7 +54,7 @@
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
-    --transition-slow: 0.5s ease;
+    --transition-slow: 0.6s cubic-bezier(0.645, 0.045, 0.355, 1); /* More realistic page turn */
     
     /* Z-index layers */
     --z-base: 1;
@@ -71,7 +72,7 @@ html {
 
 body {
     font-family: var(--font-primary);
-    background: linear-gradient(135deg, #FFF8E7 0%, #FFE5B4 100%);
+    background: linear-gradient(135deg, #F5F1E8 0%, #E6D7C3 100%);
     color: var(--text-color);
     line-height: 1.6;
     min-height: 100vh;
@@ -88,7 +89,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 248, 231, 0.98) 0%, rgba(255, 229, 180, 0.98) 100%);
+    background: linear-gradient(135deg, rgba(245, 241, 232, 0.98) 0%, rgba(230, 215, 195, 0.98) 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -300,114 +301,137 @@ body {
 }
 
 /* ============================
-   Book Container
+   3D Book Viewport
+   ============================ */
+
+.book-viewport {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    height: 700px; /* Increased from 650px */
+    margin: 0 auto;
+    perspective: 2000px;
+}
+
+.book-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #C8B8A1, #E5D7C3, #C8B8A1);
+    border-radius: var(--radius-xl);
+    box-shadow: 
+        0 25px 50px -12px var(--shadow-heavy),
+        inset 0 0 40px rgba(0,0,0,0.1);
+    z-index: -2;
+}
+
+.book-spine {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(to right, #A09080, #B8A898, #A09080);
+    transform: translateX(-50%);
+    border-radius: var(--radius-lg);
+    box-shadow: 
+        inset 0 0 15px rgba(0,0,0,0.2),
+        0 0 10px rgba(0,0,0,0.1);
+    z-index: -1;
+}
+
+/* ============================
+   Book Container & Page
    ============================ */
 
 .book-container {
     position: relative;
-    perspective: 2000px;
-    margin: 0 auto;
     width: 100%;
-    max-width: 1200px;
+    height: 100%;
+    transform-style: preserve-3d;
 }
 
 .page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-xl);
-    background: white;
-    padding: var(--spacing-xxl);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 10px 40px var(--shadow-medium);
-    min-height: 600px;
-    position: relative;
+    background: var(--page-bg);
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d7ccc8' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 20px var(--shadow-light);
+    padding: var(--spacing-xl);
     transform-style: preserve-3d;
+    backface-visibility: hidden;
+    overflow: hidden;
+    transform-origin: center center;
     transition: transform var(--transition-slow);
-}
-
-.page.active {
-    display: grid;
 }
 
 /* Page Flip Animations */
 .page.flip-out-left {
-    animation: flipOutLeft 0.5s ease-in-out forwards;
+    animation: flipOutLeft var(--transition-slow) ease-in-out forwards;
 }
 
 .page.flip-out-right {
-    animation: flipOutRight 0.5s ease-in-out forwards;
+    animation: flipOutRight var(--transition-slow) ease-in-out forwards;
 }
 
 .page.flip-in-right {
-    animation: flipInRight 0.5s ease-in-out forwards;
+    animation: flipInRight var(--transition-slow) ease-in-out forwards;
 }
 
 .page.flip-in-left {
-    animation: flipInLeft 0.5s ease-in-out forwards;
+    animation: flipInLeft var(--transition-slow) ease-in-out forwards;
 }
 
 @keyframes flipOutLeft {
-    from {
-        transform: rotateY(0deg);
-        opacity: 1;
-    }
-    to {
-        transform: rotateY(-90deg);
-        opacity: 0;
-    }
+    0% { transform: rotateY(0deg); opacity: 1; }
+    100% { transform: rotateY(-90deg); opacity: 0; }
 }
 
 @keyframes flipOutRight {
-    from {
-        transform: rotateY(0deg);
-        opacity: 1;
-    }
-    to {
-        transform: rotateY(90deg);
-        opacity: 0;
-    }
+    0% { transform: rotateY(0deg); opacity: 1; }
+    100% { transform: rotateY(90deg); opacity: 0; }
 }
 
 @keyframes flipInRight {
-    from {
-        transform: rotateY(90deg);
-        opacity: 0;
-    }
-    to {
-        transform: rotateY(0deg);
-        opacity: 1;
-    }
+    0% { transform: rotateY(90deg); opacity: 0; }
+    100% { transform: rotateY(0deg); opacity: 1; }
 }
 
 @keyframes flipInLeft {
-    from {
-        transform: rotateY(-90deg);
-        opacity: 0;
-    }
-    to {
-        transform: rotateY(0deg);
-        opacity: 1;
-    }
+    0% { transform: rotateY(-90deg); opacity: 0; }
+    100% { transform: rotateY(0deg); opacity: 1; }
 }
 
 /* ============================
-   Page Left (Image Side)
+   Page Content (Left & Right) - FINAL CORRECTED VERSION
    ============================ */
 
-.page-left {
-    position: relative;
+.page-left, .page-right {
+    position: relative; /* Crucial for positioning the sticker */
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     padding: var(--spacing-lg);
-    background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-    border-radius: var(--radius-lg);
+    height: 100%; /* Ensure they fill the page height */
+}
+
+.page-left {
+    border-right: 1px solid var(--border-color);
+    justify-content: center; /* Center image vertically */
+}
+
+.page-right {
+    justify-content: flex-start; /* Align text to the top */
 }
 
 .image-container {
     width: 100%;
-    height: 100%;
+    max-height: 80%; /* Constrain image height */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -418,7 +442,7 @@ body {
 .storybook-image {
     width: 100%;
     height: auto;
-    object-fit: contain;
+    object-fit: contain; /* Ensure image fits without distortion */
     border-radius: var(--radius-md);
     transition: transform var(--transition-normal);
 }
@@ -443,11 +467,12 @@ body {
     margin-bottom: var(--spacing-md);
 }
 
-/* Sticker Number */
+/* Sticker Number - CORRECTED */
 .sticker-container {
     position: absolute;
     top: var(--spacing-lg);
     right: var(--spacing-lg);
+    z-index: 2; /* Ensure it's on top of the image */
 }
 
 .sticker-number {
@@ -476,19 +501,13 @@ body {
     }
 }
 
-/* ============================
-   Page Right (Text Side)
-   ============================ */
-
+/* Page Right Content - CORRECTED */
 .page-right {
-    display: flex;
-    flex-direction: column;
-    padding: var(--spacing-lg);
-    overflow-y: auto;
+    overflow-y: auto; /* Allow scrolling if content is too long */
+    padding-right: calc(var(--spacing-lg) - 10px); /* Adjust for scrollbar */
 }
 
 .text-container {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
@@ -526,7 +545,8 @@ body {
 }
 
 .sentence-text {
-    font-size: 1.1rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
     line-height: 1.8;
     color: var(--text-color);
     margin-bottom: var(--spacing-xs);
@@ -644,16 +664,16 @@ body {
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
-.nav-button:hover:not(.disabled) {
+.nav-button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
 }
 
-.nav-button:active:not(.disabled) {
+.nav-button:active:not(:disabled) {
     transform: translateY(0);
 }
 
-.nav-button.disabled {
+.nav-button:disabled {
     background: linear-gradient(135deg, #ccc 0%, #999 100%);
     cursor: not-allowed;
     opacity: 0.6;
@@ -780,31 +800,14 @@ body {
    ============================ */
 
 @media (max-width: 1024px) {
+    .book-viewport {
+        height: 550px;
+    }
     .page {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
         padding: var(--spacing-lg);
-        min-height: auto;
     }
-    
-    .header-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .header-right {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .app-title {
-        justify-content: center;
-    }
-    
-    .app-subtitle {
-        margin-left: 0;
-        text-align: center;
+    .sentence-text {
+        font-size: 1.1rem;
     }
 }
 
@@ -821,8 +824,17 @@ body {
         padding: var(--spacing-md);
     }
     
+    .book-viewport {
+        height: 500px;
+    }
+    
     .page {
+        grid-template-columns: 1fr;
         padding: var(--spacing-md);
+    }
+    .page-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
     }
     
     .navigation-controls {
@@ -880,31 +892,6 @@ body {
     .page {
         box-shadow: none;
         break-inside: avoid;
-    }
-}
-
-/* ============================
-   Dark Mode Support (Optional)
-   ============================ */
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-color: #1a1a1a;
-        --page-bg: #2a2a2a;
-        --text-color: #e0e0e0;
-        --text-light: #b0b0b0;
-        --border-color: #404040;
-    }
-    
-    body {
-        background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
-    }
-    
-    .page,
-    .app-header,
-    .navigation-controls,
-    .app-footer {
-        background: var(--page-bg);
     }
 }
 

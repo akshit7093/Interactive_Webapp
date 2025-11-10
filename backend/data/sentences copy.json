@@ -2,20 +2,17 @@
   "pages": [
     {
       "page": 1,
-      "image": "girl_p_1.png",          
-      "video": "girl_p_1_animation.mp4",
+      "image": "girl_p_1.png",
       "sticker_number": "001",
       "sentences": {
         "english": [
           {
             "id": "girl_intro_p1",
             "speaker": "Girl student",
-            "text": "My name is ………… and I study in class ………",
+            "text": "My name is Dolma and I study in class ………",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/girl_intro_p1_english.mp3",  
-            "video_url": "girl_p_1_animation.mp4"            
+            "words": []
           }
         ],
         "monpa": [
@@ -25,9 +22,7 @@
             "text": "Ngog meng Dolma yin, Nye dzinda ngapa ga lebdu.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/girl_intro_p1_monpa.mp3",    
-            "video_url": "girl_p_1_animation.mp4"            
+            "words": []
           }
         ]
       }
@@ -35,18 +30,16 @@
     {
       "page": 2,
       "image": "boy_p_2.png",
-      "video": "boy_p_2_animation.mp4",
       "sticker_number": "002",
       "sentences": {
         "english": [
           {
             "id": "boy_intro_p1",
             "speaker": "Boy student",
-            "text": "My name is ………… and I study in class ………",
+            "text": "My name is Tashi and I study in class ………",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/boy_intro_p1_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -56,8 +49,7 @@
             "text": "Ngog meng Tashi yin, Nye dzinda ngapa ga lebdu.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/boy_intro_p1_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -65,7 +57,6 @@
     {
       "page": 3,
       "image": "girl_p_3.png",
-      "video": "girl_p_3_animation.mp4",
       "sticker_number": "003",
       "sentences": {
         "english": [
@@ -75,8 +66,7 @@
             "text": "My name is ………… and I am using a computer.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/girl_computer_p2_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -86,8 +76,7 @@
             "text": "Ngog meng Dolma yin, Nye computer ga leka yadu.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/girl_computer_p2_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -95,7 +84,6 @@
     {
       "page": 4,
       "image": "girl_p_4.png",
-      "video": "girl_p_4_animation.mp4",
       "sticker_number": "004",
       "sentences": {
         "english": [
@@ -105,8 +93,7 @@
             "text": "Look, there is Arunachal Pradesh on the Globe.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/arunachal_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -116,8 +103,7 @@
             "text": "Te, Gola sabthra lohka Arunachal Pradesh otso nii.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/arunachal_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -125,7 +111,6 @@
     {
       "page": 5,
       "image": "boy_p_5.png",
-      "video": "boy_p_5_animation.mp4",
       "sticker_number": "005",
       "sentences": {
         "english": [
@@ -135,8 +120,7 @@
             "text": "This is a globe.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/globe_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -146,8 +130,7 @@
             "text": "Utsu Gola sabthra yim",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/globe_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -155,7 +138,6 @@
     {
       "page": 6,
       "image": "student_p_6.png",
-      "video": "student_p_6_animation.mp4",
       "sticker_number": "006",
       "sentences": {
         "english": [
@@ -165,8 +147,7 @@
             "text": "Come let us play football.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/play_football_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -176,8 +157,7 @@
             "text": "Sho ngatang kangtse ball shanchu",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/play_football_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -185,7 +165,6 @@
     {
       "page": 7,
       "image": "boy_p_7.png",
-      "video": "boy_p_7_animation.mp4",
       "sticker_number": "007",
       "sentences": {
         "english": [
@@ -195,8 +174,7 @@
             "text": "My name is ………… Today we are celebrating the Annual school day.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/boy_celebration_p2_english.mp3"
+            "words": []
           }
         ],
         "monpa": [
@@ -206,8 +184,7 @@
             "text": "Ngog meng Tashi yin, ngar dash lokhor lobda nyimo tsisung yadu.",
             "type": "sentence",
             "audio_granularity": "sentence",
-            "words": [],
-            "audio_url": "audio/boy_celebration_p2_monpa.mp3"
+            "words": []
           }
         ]
       }
@@ -216,6 +193,6 @@
   "metadata": {
     "total_pages": 7,
     "app_title": "Interactive Language Storybook",
-    "description": "Back to School - A bilingual learning experience with animated videos and audio"
+    "description": "Back to School - A bilingual learning experience"
   }
 }

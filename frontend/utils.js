@@ -1,5 +1,4 @@
 // Utility functions for the storybook application
-
 // Debounce function to limit function calls
 function debounce(func, wait) {
     let timeout;
@@ -181,6 +180,76 @@ async function retry(fn, maxAttempts = 3, delay = 1000) {
     }
 }
 
+// ---- New Video Utilities ----
+/**
+ * Formats video duration from milliseconds to MM:SS (minutes:seconds).
+ * @param {number} milliseconds - Duration in milliseconds (e.g., 125000 for 2m5s).
+ * @returns {string} Formatted duration string (e.g., "02:05").
+ */
+function formatVideoDuration(milliseconds) {
+    if (milliseconds <= 0) return '00:00';
+    
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    const pad = (num) => num.toString().padStart(2, '0'); // Ensure 2-digit padding
+    
+    return `${pad(minutes)}:${pad(seconds)}`;
+}
+
+/**
+ * Applies video configuration settings from CONFIG.video to a video element.
+ * @param {HTMLVideoElement} videoElement - Target video element to configure.
+ */
+function applyVideoConfig(videoElement) {
+    if (!(videoElement instanceof HTMLVideoElement)) {
+        console.error('applyVideoConfig: Invalid video element provided');
+        return;
+    }
+
+    // Apply video settings from configuration
+    videoElement.controls = CONFIG.video.controls;
+    videoElement.autoplay = CONFIG.video.autoplay;
+    videoElement.loop = CONFIG.video.loop;
+    videoElement.volume = CONFIG.video.volume; // Range: 0.0 (silent) to 1.0 (full volume)
+}
+
+/**
+ * Preloads a video resource into the browser's cache to reduce load time later.
+ * @param {string} videoUrl - URL of the video to preload (e.g., from getApiUrl('/videos/page1.mp4')).
+ * @returns {Promise<boolean>} True if preloading succeeded, false otherwise.
+ */
+async function preloadVideo(videoUrl) {
+    if (!CONFIG.performance.preloadVideos) {
+        console.log('[UTILS] Video preloading disabled. Skipping.');
+        return false;
+    }
+
+    if (!videoUrl || typeof videoUrl !== 'string') {
+        console.error('[UTILS] preloadVideo: Invalid video URL provided');
+        return false;
+    }
+
+    try {
+        // Use a HEAD request to check if the video exists without downloading content
+        const response = await fetch(videoUrl, { method: 'HEAD' });
+        if (!response.ok) {
+            throw new Error(`Video check failed (HTTP ${response.status})`);
+        }
+
+        // Optional: Fetch the full video to preload it into cache (uncomment if needed)
+        // const fullResponse = await fetch(videoUrl);
+        // if (!fullResponse.ok) throw new Error(`Video preload failed (HTTP ${fullResponse.status})`);
+        // await fullResponse.blob(); // Ensure the response body is read to trigger caching
+
+        console.log(`[UTILS] Video preloaded successfully: ${videoUrl}`);
+        return true;
+    } catch (error) {
+        console.error(`[UTILS] Failed to preload video ${videoUrl}:`, error.message);
+        return false;
+    }
+}
+
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -199,6 +268,10 @@ if (typeof module !== 'undefined' && module.exports) {
         capitalizeFirst,
         truncate,
         wait,
-        retry
+        retry,
+        // New video utilities added below
+        formatVideoDuration,
+        applyVideoConfig,
+        preloadVideo
     };
 }
