@@ -7,8 +7,41 @@ let state = {
   languages: [],
   pages: [],
   audio: null,
-  animating: false
+  animating: false,
+  // Track loaded videos to avoid redundant loading
+  loadedVideos: {}
 };
+
+// ---- Stop Video Playback and Reset Display ----
+function stopVideo() {
+  const currentPageElement = document.querySelector(`.page[data-page="${state.currentPage}"]`);
+  if (!currentPageElement) return;
+
+  const video = currentPageElement.querySelector('.storybook-video');
+  if (video) {
+    console.log('[DEBUG] Stopping current video playback');
+    video.pause();
+    video.currentTime = 0;
+    video.style.display = 'none';
+    video.removeEventListener('ended', handleVideoEnd);
+    video.removeEventListener('error', handleVideoError);
+  }
+
+  const img = currentPageElement.querySelector('.storybook-image');
+  if (img) {
+    img.style.display = 'block';
+  }
+}
+
+function handleVideoEnd() {
+  console.log('[DEBUG] Video playback ended - returning to image');
+  stopVideo();
+}
+
+function handleVideoError(e) {
+  console.error('[ERROR] Video playback failed:', e);
+  stopVideo();
+}
 
 // ---- Startup ----
 document.addEventListener('DOMContentLoaded', async () => {
@@ -68,6 +101,15 @@ async function fetchPages() {
   state.pages = data.pages;
   state.totalPages = data.metadata.total_pages;
   console.log(`[DEBUG] Loaded ${state.pages.length} pages. Total pages: ${state.totalPages}`);
+  
+  // CRITICAL: Verify video fields exist in page data
+  console.log('[DEBUG] === PAGE DATA STRUCTURE VERIFICATION ===');
+  state.pages.forEach(page => {
+    console.log(`Page ${page.page}: Has video field? ${!!page.video}, Value: "${page.video}"`);
+    if (!page.video) {
+      console.warn(`[WARN] Page ${page.page} is missing video field! Videos will not play.`);
+    }
+  });
 }
 
 // ---- Listeners ----
@@ -77,12 +119,14 @@ function setupListeners() {
     console.log(`[DEBUG] Language changed to: ${e.target.value}`);
     state.language = e.target.value;
     stopAudio(); 
+    stopVideo(); 
     renderPage();
   };
   document.getElementById('translation-toggle').onchange = e => {
     console.log(`[DEBUG] Translation toggle set to: ${e.target.checked}`);
     state.showEnglish = e.target.checked;
     stopAudio(); 
+    stopVideo(); 
     renderPage();
   };
   document.getElementById('prev-page').onclick = () => {
@@ -92,6 +136,7 @@ function setupListeners() {
       return;
     }
     stopAudio(); 
+    stopVideo(); 
     animateFlip('prev', () => {
       state.currentPage--;
       console.log(`[DEBUG] Navigated to page: ${state.currentPage} (prev)`);
@@ -105,6 +150,7 @@ function setupListeners() {
       return;
     }
     stopAudio(); 
+    stopVideo(); 
     animateFlip('next', () => {
       state.currentPage++;
       console.log(`[DEBUG] Navigated to page: ${state.currentPage} (next)`);
@@ -118,8 +164,9 @@ function setupListeners() {
     } else if (e.key === 'ArrowRight') {
       document.getElementById('next-page').click();
     } else if (e.key === 'Escape') {
-      console.log('[DEBUG] Escape key pressed – stopping audio');
+      console.log('[DEBUG] Escape key pressed – stopping audio and video');
       stopAudio();
+      stopVideo();
     }
   });
   console.log('[DEBUG] Event listeners setup complete.');
@@ -147,30 +194,64 @@ function renderPage(animDirection = null) {
   page.className = `page ${animDirection ? `flip-in-${animDirection}` : ''}`;
   page.dataset.page = state.currentPage.toString();
 
-  // Left Side: Image Container
+  // Left Side: Image/Video Container
   const left = document.createElement('div');
   left.className = 'page-left';
   const imgCont = document.createElement('div');
   imgCont.className = 'image-container';
 
-  // Image Element
+  // Image Element (always present)
   const img = document.createElement('img');
   img.src = getApiUrl(`/api/images/${pageData.image}`);
   img.alt = `Page ${state.currentPage} image`;
   img.className = 'storybook-image';
   img.style.display = 'block';
-  
-  // Add loading state
-  img.onload = () => {
-    console.log(`[DEBUG] Image loaded for page ${state.currentPage}: ${pageData.image}`);
-  };
-  
-  img.onerror = () => {
-    console.error(`[ERROR] Failed to load image: ${pageData.image}`);
-    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
-  };
-  
   imgCont.appendChild(img);
+
+  // Video Element (added if page has video)
+  if (pageData.video) {
+    console.log(`[DEBUG] ✅ Video field found for page ${state.currentPage}: "${pageData.video}"`);
+    
+    const video = document.createElement('video');
+    // Preload the video immediately to prevent delay
+    const videoUrl = getApiUrl(`/api/videos/${encodeURIComponent(pageData.video)}`);
+    video.src = videoUrl;
+    console.log(`[DEBUG] Video src set to: ${videoUrl}`);
+    
+    video.className = 'storybook-video';
+    video.style.display = 'none';  // Hidden by default, shown when audio plays
+    video.controls = false;
+    video.autoplay = false;
+    video.loop = false;
+    video.muted = true;  // Critical for autoplay to work in modern browsers
+    video.playsInline = true;
+    video.preload = 'auto'; // Preload the entire video
+    
+    // Track that we've loaded this video
+    state.loadedVideos[pageData.video] = true;
+    
+    // Add loading state to track when video is ready
+    video.dataset.loaded = 'false';
+    
+    // When video is loaded, mark it as ready
+    video.addEventListener('loadeddata', () => {
+      console.log(`[DEBUG] Video data loaded for page ${state.currentPage}`);
+      video.dataset.loaded = 'true';
+    });
+    
+    // Error handling
+    video.onerror = (e) => {
+      console.error(`[ERROR] Video loading failed for "${pageData.video}":`, e.target.error);
+      video.dataset.loaded = 'error';
+      handleVideoError(e);
+    };
+    
+    imgCont.appendChild(video);
+    console.log(`[DEBUG] Video element created and appended to DOM for page ${state.currentPage}`);
+  } else {
+    console.warn(`[WARN] ❌ No video field found for page ${state.currentPage}. Check your sentences.json data.`);
+  }
+
   left.appendChild(imgCont);
   
   // Sticker Container
@@ -233,7 +314,7 @@ function renderPage(animDirection = null) {
   // Audio Instructions
   const audInfo = document.createElement('div');
   audInfo.className = 'audio-instructions';
-  audInfo.innerHTML = '<span class="audio-icon">🔊</span> <p>Click on words or sentences to hear pronunciation</p>';
+  audInfo.innerHTML = '<span class="audio-icon">🔊</span> <p>Click on words or sentences to hear pronunciation and watch animation</p>';
   right.appendChild(audInfo);
 
   page.appendChild(left);
@@ -317,7 +398,7 @@ function updateNavBtns() {
   console.log(`[DEBUG] Nav buttons updated – Prev: ${!prevBtn.disabled}, Next: ${!nextBtn.disabled}`);
 }
 
-// ---- AUDIO ONLY ----
+// ---- AUDIO & VIDEO ----
 function stopAudio() {
   if (state.audio) {
     console.log('[DEBUG] Stopping current audio playback');
@@ -331,10 +412,22 @@ function stopAudio() {
 function playAudio(language, sentenceId, audioId, el) {
   console.log(`[DEBUG] 🔊 Attempting to play audio: lang=${language}, sentence=${sentenceId}, type=${audioId}`);
   stopAudio();
+  stopVideo();
 
   el.classList.add('playing');
 
-  // Audio handling
+  const currentPageData = state.pages.find(p => p.page === state.currentPage);
+  if (!currentPageData) {
+    console.warn('[WARN] No current page data found');
+    el.classList.remove('playing');
+    return;
+  }
+  
+  // CRITICAL: Check if this page has a video field
+  console.log(`[DEBUG] 📄 Current page data for playback (page ${state.currentPage}):`, currentPageData);
+  console.log(`[DEBUG] 🎥 Does page ${state.currentPage} have video? ${!!currentPageData.video}, Value: "${currentPageData.video}"`);
+
+  // Audio handling - ALWAYS make the API call
   const audioUrl = getApiUrl(`/api/audio/${language}/${sentenceId}/${audioId}`);
   console.log(`[DEBUG] 📢 Requesting audio from URL: ${audioUrl}`);
   const audioElem = new Audio(audioUrl);
@@ -349,15 +442,111 @@ function playAudio(language, sentenceId, audioId, el) {
     });
   }
 
+  // VIDEO HANDLING - ONLY IF VIDEO FIELD EXISTS
+  if (currentPageData.video) {
+    console.log(`[DEBUG] 🎬 VIDEO FIELD DETECTED - Setting up video playback`);
+    
+    // Wait for DOM to be fully ready
+    setTimeout(() => {
+      console.log(`[DEBUG] ⏱️ Starting video setup for page ${state.currentPage}`);
+      
+      const currentPageElement = document.querySelector(`.page[data-page="${state.currentPage}"]`);
+      if (!currentPageElement) {
+        console.warn('[WARN] Page element not found in DOM for video playback');
+        return;
+      }
+
+      const video = currentPageElement.querySelector('.storybook-video');
+      const img = currentPageElement.querySelector('.storybook-image');
+      
+      console.log(`[DEBUG] DOM elements status - Video: ${!!video}, Image: ${!!img}`);
+      
+      if (video && img) {
+        // Check if video is already loaded
+        if (video.dataset.loaded === 'true') {
+          console.log('[DEBUG] Video is already loaded, playing immediately');
+          video.style.display = 'block';
+          img.style.display = 'none';
+          
+          // Setup event listeners
+          video.removeEventListener('ended', handleVideoEnd);
+          video.removeEventListener('error', handleVideoError);
+          video.addEventListener('ended', handleVideoEnd);
+          video.addEventListener('error', handleVideoError);
+          
+          // Attempt to play video
+          video.play()
+            .then(() => {
+              console.log('[DEBUG] 🎥 Video playback started successfully');
+            })
+            .catch(err => {
+              console.error('[ERROR] ❌ Video play rejected:', err);
+              // Reset display if playback fails
+              video.style.display = 'none';
+              img.style.display = 'block';
+              handleVideoError(err);
+            });
+        } else if (video.dataset.loaded === 'false') {
+          console.log('[DEBUG] Video is still loading, waiting for it to be ready');
+          
+          // Wait for video to be loaded before playing
+          const checkVideoLoaded = () => {
+            if (video.dataset.loaded === 'true') {
+              console.log('[DEBUG] Video is now loaded, playing');
+              video.style.display = 'block';
+              img.style.display = 'none';
+              
+              // Setup event listeners
+              video.removeEventListener('ended', handleVideoEnd);
+              video.removeEventListener('error', handleVideoError);
+              video.addEventListener('ended', handleVideoEnd);
+              video.addEventListener('error', handleVideoError);
+              
+              // Attempt to play video
+              video.play()
+                .then(() => {
+                  console.log('[DEBUG] 🎥 Video playback started successfully after waiting');
+                })
+                .catch(err => {
+                  console.error('[ERROR] ❌ Video play rejected after waiting:', err);
+                  // Reset display if playback fails
+                  video.style.display = 'none';
+                  img.style.display = 'block';
+                  handleVideoError(err);
+                });
+            } else if (video.dataset.loaded === 'error') {
+              console.error('[ERROR] Video failed to load');
+              handleVideoError(new Error('Video failed to load'));
+            } else {
+              // Still loading, check again after a short delay
+              setTimeout(checkVideoLoaded, 100);
+            }
+          };
+          
+          checkVideoLoaded();
+        } else {
+          console.error('[ERROR] Video loading status is unknown or error occurred');
+          handleVideoError(new Error('Video loading status unknown'));
+        }
+      } else {
+        console.warn('[WARN] ❌ Video or image element missing in current page DOM');
+      }
+    }, 50); // Short delay to ensure DOM is ready
+  } else {
+    console.log(`[DEBUG] ⏭️ No video field for page ${state.currentPage} - only playing audio`);
+  }
+
   // Audio cleanup
   audioElem.onended = () => {
     console.log('[DEBUG] 🔊 Audio playback ended');
     el.classList.remove('playing');
+    // Don't call stopVideo() here - let video end naturally
   };
 
   audioElem.onerror = () => {
     console.error('[ERROR] ❌ Audio playback failed for URL:', audioUrl);
     el.classList.remove('playing');
+    stopVideo();
   };
 }
 
