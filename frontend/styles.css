@@ -423,56 +423,76 @@ body {
 .page-left {
     border-right: 1px solid var(--border-color);
     justify-content: center; /* Center image vertically */
+    padding: 0; /* Remove padding since we're using absolute positioning */
 }
 
 .page-right {
     justify-content: flex-start; /* Align text to the top */
 }
 
+/* ============================
+   Image and Video Container - Critical for consistent sizing
+   ============================ */
+
 .image-container {
+    position: relative;
     width: 100%;
-    max-height: 80%; /* Constrain image height */
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: var(--radius-md);
     overflow: hidden;
+    padding: 15px;
+    box-sizing: border-box;
 }
 
-.storybook-image {
-    width: 100%;
-    height: auto;
-    object-fit: contain; /* Ensure image fits without distortion */
-    border-radius: var(--radius-md);
-    transition: transform var(--transition-normal);
-}
-
-.storybook-image:hover {
-    transform: scale(1.02);
-}
-
-.image-placeholder,
-.image-error {
+/* Create a consistent wrapper for both image and video */
+.media-wrapper {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    padding: var(--spacing-xxl);
-    color: var(--text-lighter);
-    text-align: center;
+    align-items: center;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: #f9f9f9; /* Light background to show during transitions */
 }
 
-.placeholder-icon {
-    font-size: 4rem;
-    margin-bottom: var(--spacing-md);
+/* Base styles for both image and video */
+.storybook-image,
+.storybook-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Preserves aspect ratio without stretching */
+    display: block;
+    margin: 0;
+    border-radius: var(--radius-md);
+    transition: opacity 0.2s ease; /* Faster transition to reduce lag */
+    background: transparent;
 }
 
-/* Sticker Number - CORRECTED */
+/* Ensure video and image occupy the exact same space */
+.storybook-image {
+    z-index: 1;
+}
+
+.storybook-video {
+    z-index: 2;
+}
+
+/* Sticker positioning - ensure it stays above video */
 .sticker-container {
     position: absolute;
-    top: var(--spacing-lg);
-    right: var(--spacing-lg);
-    z-index: 2; /* Ensure it's on top of the image */
+    top: 20px;
+    right: 20px;
+    z-index: 10; /* Critical to stay above video */
 }
 
 .sticker-number {
@@ -856,6 +876,31 @@ body {
         bottom: var(--spacing-md);
         max-width: calc(100% - 2rem);
     }
+    
+    /* Responsive adjustments for image/video container */
+    .media-wrapper {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        border-radius: var(--radius-sm);
+    }
+    
+    .storybook-image,
+    .storybook-video {
+        border-radius: var(--radius-sm);
+    }
+    
+    .sticker-container {
+        top: 15px;
+        right: 15px;
+    }
+    
+    .sticker-number {
+        width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -873,6 +918,18 @@ body {
     
     .sentence-text {
         font-size: 1rem;
+    }
+    
+    .media-wrapper {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+    }
+    
+    .sticker-container {
+        top: 12px;
+        right: 12px;
     }
 }
 
@@ -919,84 +976,5 @@ body {
     .sentence-clickable:hover {
         background: black;
         color: white;
-    }
-}
-/* Image and Video Container - Critical for consistent sizing */
-.image-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
-/* Base styles for both image and video */
-.storybook-image,
-.storybook-video {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain; /* Preserves aspect ratio without stretching */
-    display: block;
-    margin: 0 auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: opacity 0.3s ease;
-}
-
-/* Ensure video doesn't overflow container */
-.storybook-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-}
-
-/* Maintain aspect ratio for video container */
-.video-aspect-ratio {
-    position: relative;
-    width: 100%;
-    padding-top: 75%; /* 4:3 aspect ratio - adjust as needed */
-}
-
-.video-aspect-ratio video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* Sticker positioning - ensure it stays above video */
-.sticker-container {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 10; /* Critical to stay above video */
-}
-
-/* Page left container adjustments */
-.page-left {
-    position: relative;
-    height: 100%;
-}
-
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-    .image-container {
-        padding: 10px;
-    }
-    
-    .storybook-image,
-    .storybook-video {
-        border-radius: 4px;
     }
 }

@@ -7,7 +7,9 @@ let state = {
   languages: [],
   pages: [],
   audio: null,
-  animating: false
+  animating: false,
+  // Track loaded videos to avoid redundant loading
+  loadedVideos: {}
 };
 
 // ---- Stop Video Playback and Reset Display ----
@@ -211,8 +213,10 @@ function renderPage(animDirection = null) {
     console.log(`[DEBUG] ✅ Video field found for page ${state.currentPage}: "${pageData.video}"`);
     
     const video = document.createElement('video');
-    // DO NOT set the src here - we'll set it dynamically when needed
-    console.log(`[DEBUG] Video element created (src will be set on click)`);
+    // Preload the video immediately to prevent delay
+    const videoUrl = getApiUrl(`/api/videos/${encodeURIComponent(pageData.video)}`);
+    video.src = videoUrl;
+    console.log(`[DEBUG] Video src set to: ${videoUrl}`);
     
     video.className = 'storybook-video';
     video.style.display = 'none';  // Hidden by default, shown when audio plays
@@ -221,11 +225,24 @@ function renderPage(animDirection = null) {
     video.loop = false;
     video.muted = true;  // Critical for autoplay to work in modern browsers
     video.playsInline = true;
-    video.preload = 'none'; // Don't preload videos until needed
+    video.preload = 'auto'; // Preload the entire video
+    
+    // Track that we've loaded this video
+    state.loadedVideos[pageData.video] = true;
+    
+    // Add loading state to track when video is ready
+    video.dataset.loaded = 'false';
+    
+    // When video is loaded, mark it as ready
+    video.addEventListener('loadeddata', () => {
+      console.log(`[DEBUG] Video data loaded for page ${state.currentPage}`);
+      video.dataset.loaded = 'true';
+    });
     
     // Error handling
     video.onerror = (e) => {
       console.error(`[ERROR] Video loading failed for "${pageData.video}":`, e.target.error);
+      video.dataset.loaded = 'error';
       handleVideoError(e);
     };
     
@@ -445,44 +462,76 @@ function playAudio(language, sentenceId, audioId, el) {
       console.log(`[DEBUG] DOM elements status - Video: ${!!video}, Image: ${!!img}`);
       
       if (video && img) {
-        // Set the video src dynamically HERE (critical fix)
-        const videoUrl = getApiUrl(`/api/videos/${encodeURIComponent(currentPageData.video)}`);
-        console.log(`[DEBUG] 🎥 Requesting video from URL: ${videoUrl}`);
-        
-        // Only update src if it's different
-        if (video.src !== videoUrl) {
-          video.src = videoUrl;
-          console.log(`[DEBUG] Video src set to: ${videoUrl}`);
+        // Check if video is already loaded
+        if (video.dataset.loaded === 'true') {
+          console.log('[DEBUG] Video is already loaded, playing immediately');
+          video.style.display = 'block';
+          img.style.display = 'none';
+          
+          // Setup event listeners
+          video.removeEventListener('ended', handleVideoEnd);
+          video.removeEventListener('error', handleVideoError);
+          video.addEventListener('ended', handleVideoEnd);
+          video.addEventListener('error', handleVideoError);
+          
+          // Attempt to play video
+          video.play()
+            .then(() => {
+              console.log('[DEBUG] 🎥 Video playback started successfully');
+            })
+            .catch(err => {
+              console.error('[ERROR] ❌ Video play rejected:', err);
+              // Reset display if playback fails
+              video.style.display = 'none';
+              img.style.display = 'block';
+              handleVideoError(err);
+            });
+        } else if (video.dataset.loaded === 'false') {
+          console.log('[DEBUG] Video is still loading, waiting for it to be ready');
+          
+          // Wait for video to be loaded before playing
+          const checkVideoLoaded = () => {
+            if (video.dataset.loaded === 'true') {
+              console.log('[DEBUG] Video is now loaded, playing');
+              video.style.display = 'block';
+              img.style.display = 'none';
+              
+              // Setup event listeners
+              video.removeEventListener('ended', handleVideoEnd);
+              video.removeEventListener('error', handleVideoError);
+              video.addEventListener('ended', handleVideoEnd);
+              video.addEventListener('error', handleVideoError);
+              
+              // Attempt to play video
+              video.play()
+                .then(() => {
+                  console.log('[DEBUG] 🎥 Video playback started successfully after waiting');
+                })
+                .catch(err => {
+                  console.error('[ERROR] ❌ Video play rejected after waiting:', err);
+                  // Reset display if playback fails
+                  video.style.display = 'none';
+                  img.style.display = 'block';
+                  handleVideoError(err);
+                });
+            } else if (video.dataset.loaded === 'error') {
+              console.error('[ERROR] Video failed to load');
+              handleVideoError(new Error('Video failed to load'));
+            } else {
+              // Still loading, check again after a short delay
+              setTimeout(checkVideoLoaded, 100);
+            }
+          };
+          
+          checkVideoLoaded();
+        } else {
+          console.error('[ERROR] Video loading status is unknown or error occurred');
+          handleVideoError(new Error('Video loading status unknown'));
         }
-        
-        video.style.display = 'block';
-        img.style.display = 'none';
-        
-        // Setup event listeners
-        video.removeEventListener('ended', handleVideoEnd); // Remove any existing listeners
-        video.removeEventListener('error', handleVideoError);
-        video.addEventListener('ended', handleVideoEnd);
-        video.addEventListener('error', handleVideoError);
-        
-        // Load the video to ensure it's ready to play
-        video.load();
-        
-        // Attempt to play video
-        video.play()
-          .then(() => {
-            console.log('[DEBUG] 🎥 Video playback started successfully');
-          })
-          .catch(err => {
-            console.error('[ERROR] ❌ Video play rejected:', err);
-            // Reset display if playback fails
-            video.style.display = 'none';
-            img.style.display = 'block';
-            handleVideoError(err);
-          });
       } else {
         console.warn('[WARN] ❌ Video or image element missing in current page DOM');
       }
-    }, 50); // Shorter delay since we're setting src dynamically
+    }, 50); // Short delay to ensure DOM is ready
   } else {
     console.log(`[DEBUG] ⏭️ No video field for page ${state.currentPage} - only playing audio`);
   }

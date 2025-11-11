@@ -236,7 +236,7 @@ async def get_image(image_name: str = Path(...), request: Request = None):
         logger.error(f"Error serving image {image_name}: {e}")
         raise HTTPException(status_code=500, detail="Failed to serve image")
 
-# FIXED: Correct path validation and detailed logging
+# FIXED: Correct path validation and detailed logging with caching headers
 @app.get("/api/videos/{video_name}")
 async def get_video(video_name: str = Path(...), request: Request = None):
     """Serve video files (animation videos for pages)"""
@@ -263,7 +263,19 @@ async def get_video(video_name: str = Path(...), request: Request = None):
         media_type = media_types.get(video_path.suffix.lower(), 'video/mp4')
         
         logger.info(f"Serving video: {video_name} from {video_path}")
-        return FileResponse(path=str(video_path), media_type=media_type, filename=video_name)
+        
+        # Add caching headers to improve performance
+        headers = {
+            "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+            "Accept-Ranges": "bytes"  # Support for range requests (streaming)
+        }
+        
+        return FileResponse(
+            path=str(video_path), 
+            media_type=media_type, 
+            filename=video_name,
+            headers=headers
+        )
     
     except HTTPException:
         raise
