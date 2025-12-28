@@ -11,6 +11,12 @@
       "name": "Monpa",
       "display_name": "Monpa",
       "default": false
+    },
+    {
+      "code": "tai",
+      "name": "Tai Khamti",
+      "display_name": "Tai Khamti",
+      "default": false
     }
   ],
   "default_language": "english"
