@@ -52,7 +52,7 @@
           {
             "id": "boy_intro_p1",
             "speaker": "Boy student",
-            "text": "My name is Chow Arihaan Mannoi and I study in class I.",
+            "text": "My name is Tashi and I study in class 5.",
             "type": "sentence",
             "audio_granularity": "sentence",
             "audio_path": "audio/english/boy_intro_p1.mp3",
@@ -95,7 +95,7 @@
           {
             "id": "girl_computer_p2",
             "speaker": "Girl student",
-            "text": "My name is Nang Vipassini Mannoi and I am using a computer.",
+            "text": "My name is Dolma and I am using a computer.",
             "type": "sentence",
             "audio_granularity": "sentence",
             "audio_path": "audio/english/girl_computer_p2.mp3",
@@ -267,7 +267,7 @@
           {
             "id": "boy_celebration_p2",
             "speaker": "Boy student",
-            "text": "My name is Chow Arihaan Mannoi. Today we are celebrating the Annual school day.",
+            "text": "My name is Tashi. Today we are celebrating the Annual school day.",
             "type": "sentence",
             "audio_granularity": "sentence",
             "audio_path": "audio/english/boy_celebration_p2.mp3",
