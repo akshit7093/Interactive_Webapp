@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Interactive Language Learning Storybook - Back to School">
     <meta name="keywords" content="language learning, storybook, education, interactive">
     <meta name="author" content="Interactive Storybook">
-    
+
     <title>Interactive Storybook - Back to School</title>
-    
+
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
-    
+    <link rel="icon" type="image/png"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+
     <!-- Preconnect to API -->
     <link rel="preconnect" href="https://499a0dea7242.ngrok-free.app">
-    
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
@@ -31,7 +36,7 @@
     </div>
     <!-- Main Container -->
     <div class="app-container">
-        
+
         <!-- Header -->
         <header class="app-header">
             <div class="header-content">
@@ -42,7 +47,7 @@
                     </h1>
                     <p class="app-subtitle">Back to School</p>
                 </div>
-                
+
                 <div class="header-right">
                     <!-- Language Selector -->
                     <div class="language-selector">
@@ -54,7 +59,7 @@
                             <option value="english">English</option>
                         </select>
                     </div>
-                    
+
                     <!-- Translation Toggle -->
                     <div class="translation-toggle-container">
                         <label class="toggle-switch">
@@ -68,7 +73,7 @@
         </header>
         <!-- Main Content -->
         <main class="main-content">
-            
+
             <!-- Book Viewport for 3D Perspective -->
             <div class="book-viewport">
                 <div class="book-background"></div>
@@ -77,32 +82,33 @@
                     <!-- The single .page element will be inserted here by script.js -->
                 </div>
             </div>
-            
+
             <!-- Navigation Controls -->
             <div class="navigation-controls">
                 <button id="prev-page" class="nav-button prev-button" aria-label="Previous Page">
                     <span class="nav-icon">◀</span>
                     <span class="nav-text">Previous</span>
                 </button>
-                
+
                 <div class="page-indicator">
                     <span id="page-number" class="page-number">Page 1 of 2</span>
                 </div>
-                
+
                 <button id="next-page" class="nav-button next-button" aria-label="Next Page">
                     <span class="nav-text">Next</span>
                     <span class="nav-icon">▶</span>
                 </button>
             </div>
-            
+
             <!-- Keyboard Shortcuts Help -->
             <div class="keyboard-shortcuts">
                 <span class="shortcut-icon">⌨️</span>
                 <span class="shortcut-text">
-                    Use arrow keys to navigate • Press ESC to stop audio and video • Click sentences to hear audio and see video
+                    Use arrow keys to navigate • Press ESC to stop audio and video • Click sentences to hear audio and
+                    see video
                 </span>
             </div>
-            
+
         </main>
         <!-- Footer -->
         <footer class="app-footer">
@@ -124,7 +130,7 @@
     <script src="config.js"></script>
     <script src="utils.js"></script>
     <script src="script.js"></script>
-    
+
     <!-- Initialize -->
     <script>
         window.addEventListener('load', () => {
@@ -141,4 +147,5 @@
         }
     </script>
 </body>
+
 </html>

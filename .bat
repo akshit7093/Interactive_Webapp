@@ -9,7 +9,7 @@ REM Wait a moment for git pull to complete
 timeout /t 2 /nobreak > nul
 
 REM Run Python script hidden in background using pythonw
-START /B pythonw app_copy.py
+START /B python app_copy.py
 
 REM Wait for server to start
 timeout /t 3 /nobreak > nul
